@@ -1,0 +1,36 @@
+---
+x-base-common:
+  &base-common
+  image: puzzle9/frankenphp:8.4
+  # build: .
+  environment:
+    &base-common-env
+    APP_NAME: base
+  volumes:
+    - ./deploy/custom_php.ini:/usr/local/etc/php/conf.d/0_custom_php.ini:ro
+    - ./:/app
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+
+services:
+  web:
+    <<: *base-common
+    command: php -d variables_order=EGPCS artisan octane:frankenphp --host 127.0.0.1 --port 4050 --admin-port 4051 --caddyfile /app/deploy/Caddyfile
+    ports:
+      - "9001:4050"
+    restart: always
+
+  queue:
+    <<: *base-common
+    command: php artisan artisan queue:work --sleep=5 --max-time=3600
+    restart: always
+
+  cron:
+    <<: *base-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        crontab /app/deploy/crontab
+        cron -f -L 3
+    restart: always
