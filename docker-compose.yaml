@@ -1,7 +1,7 @@
 ---
 x-base-common:
   &base-common
-  image: puzzle9/frankenphp:8.4
+  image: base/frankenphp:8.4
   # build: .
   environment:
     &base-common-env
@@ -17,7 +17,7 @@ services:
     <<: *base-common
     command: php -d variables_order=EGPCS artisan octane:frankenphp --host 127.0.0.1 --port 4050 --admin-port 4051 --caddyfile /app/deploy/Caddyfile
     ports:
-      - "9001:4050"
+      - "4050:4050"
     restart: always
 
   queue:

@@ -10,6 +10,8 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(fn() => response(null, 401));
+
         $middleware->group('web', []);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

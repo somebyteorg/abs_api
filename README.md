@@ -3,7 +3,7 @@
 # build
 
 ```bash
-docker build -t puzzle9/frankenphp:8.4 --build-arg .
+docker build -t base/frankenphp:8.4 .
 ```
 
 # run
