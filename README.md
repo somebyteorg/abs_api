@@ -3,7 +3,7 @@
 # build
 
 ```bash
-docker build -t base/frankenphp:8.4 .
+docker build -t base/frankenphp:8.5 .
 ```
 
 # run

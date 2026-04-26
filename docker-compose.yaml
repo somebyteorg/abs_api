@@ -1,7 +1,7 @@
 ---
 x-base-common:
   &base-common
-  image: base/frankenphp:8.4
+  image: base/frankenphp:8.5
   # build: .
   environment:
     &base-common-env
