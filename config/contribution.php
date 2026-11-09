@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'max_file_size' => 90 * 1024 * 1024,
+    'max_file_size' => 1024 * 1024 * 1024,
     'max_cover_size' => 20 * 1024 * 1024,
     'chunk_size' => 16 * 1024 * 1024,
-    'max_chunk_size' => 100 * 1024 * 1024,
+    'max_chunk_size' => 90 * 1024 * 1024,
     'audio_extensions' => ['mp3', 'm4a', 'm4b', 'aac', 'flac', 'ogg', 'opus', 'wav', 'wma', 'aiff'],
     'cover_extensions' => ['jpg', 'jpeg', 'png', 'webp', 'gif'],
     'cover_compression' => [
