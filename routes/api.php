@@ -7,6 +7,7 @@ use App\Http\Controllers\ContributionController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\LibraryController;
+use App\Http\Controllers\ListeningController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\UploadController;
@@ -39,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('history/{history}/restore', [HistoryController::class, 'restore'])->middleware('role:edit')->whereNumber('history');
     Route::get('uploads', [ContributionController::class, 'uploads']);
     Route::get('stats', [ContributionController::class, 'stats']);
+    Route::get('listening-stats', [ListeningController::class, 'stats'])->middleware('throttle:30,1');
     Route::get('inbox', [InboxController::class, 'index']);
     Route::patch('inbox/{message}/read', [InboxController::class, 'read'])->whereNumber('message');
 
