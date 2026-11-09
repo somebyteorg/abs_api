@@ -30,7 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::get('works/{work}/chapters', [ChapterController::class, 'index'])->whereNumber('work');
     Route::get('works/{work}/chapter-directory', [ChapterController::class, 'directory'])->middleware('role:user')->whereNumber('work');
     Route::get('works/{work}/chapter-page', [WorkController::class, 'chapterPage'])->whereNumber('work');
-    Route::get('works/{work}/status', [WorkController::class, 'status'])->whereNumber('work');
     Route::get('works/{work}', [WorkController::class, 'show'])->whereNumber('work');
     Route::delete('works/{work}', [WorkController::class, 'destroy'])->whereNumber('work');
     Route::get('file/{user}/{file}', [MediaController::class, 'file'])->whereUuid('file')->whereNumber('user');

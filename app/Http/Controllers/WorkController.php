@@ -33,11 +33,6 @@ class WorkController extends Controller
         return ['data' => [...$entry->toArray(), ...$state->read($work)]];
     }
 
-    public function status(int $work, Services\WorkState $state)
-    {
-        return ['data' => $state->read($work)];
-    }
-
     public function chapterPage(Request $request, int $work)
     {
         $data = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'filter' => ['nullable', Rule::in(['all', 'active', 'missing', 'multiple'])], 'page' => ['nullable', 'integer', 'min:1']]);
