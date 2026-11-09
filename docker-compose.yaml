@@ -1,11 +1,11 @@
 ---
-x-base-common:
-  &base-common
-  image: base/frankenphp:8.5
+x-abs-common:
+  &abs-common
+  image: abs/frankenphp:8.5
   # build: .
   environment:
-    &base-common-env
-    APP_NAME: base
+    &abs-common-env
+    APP_NAME: abs
   volumes:
     - ./deploy/custom_php.ini:/usr/local/etc/php/conf.d/0_custom_php.ini:ro
     - ./:/app
@@ -14,19 +14,19 @@ x-base-common:
 
 services:
   web:
-    <<: *base-common
-    command: php -d variables_order=EGPCS artisan octane:frankenphp --host 127.0.0.1 --port 4050 --admin-port 4051 --caddyfile /app/deploy/Caddyfile
+    <<: *abs-common
+    command: php -d variables_order=EGPCS artisan octane:frankenphp --host 0.0.0.0 --port 4050 --admin-port 4051 --caddyfile /app/deploy/Caddyfile
     ports:
       - "4050:4050"
     restart: always
 
   queue:
-    <<: *base-common
-    command: php artisan artisan queue:work --sleep=5 --max-time=3600
+    <<: *abs-common
+    command: php artisan queue:work --queue=abs-sync,default --sleep=3 --tries=4 --timeout=120
     restart: always
 
   cron:
-    <<: *base-common
+    <<: *abs-common
     entrypoint: /bin/bash
     command:
       - -c
@@ -34,3 +34,10 @@ services:
         crontab /app/deploy/crontab
         cron -f -L 3
     restart: always
+
+  command:
+    <<: *abs-common
+    command: tail -f /dev/null
+    profiles: [ "command" ]
+    restart: no
+

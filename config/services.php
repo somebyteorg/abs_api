@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'emos' => [
+        'url'      => env('EMOS_URL'),
+        'url_link' => env('EMOS_URL_LINK'),
+        // 'token'    => env('EMOS_TOKEN'),
+    ],
+
+    'metadata' => [
+        'global' => env('METADATA_URL_GLOBAL'),
+    ],
+
 ];

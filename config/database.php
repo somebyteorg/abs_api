@@ -114,6 +114,19 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'abs' => [
+            'driver'         => 'pgsql',
+            'host'           => env('ABS_DB_HOST', '127.0.0.1'),
+            'port'           => env('ABS_DB_PORT', '5432'),
+            'database'       => env('ABS_DB_DATABASE'),
+            'username'       => env('ABS_DB_USERNAME'),
+            'password'       => env('ABS_DB_PASSWORD'),
+            'charset'        => env('ABS_DB_CHARSET', 'utf8'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'search_path'    => 'public',
+            'sslmode'        => env('ABS_DB_SSLMODE', 'prefer'),
+        ],
     ],
 
     /*
