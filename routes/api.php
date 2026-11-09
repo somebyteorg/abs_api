@@ -14,6 +14,7 @@ use App\Http\Controllers\WorkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('session', [AuthController::class, 'session']);
+Route::get('csrf-token', [AuthController::class, 'csrfToken']);
 Route::get('sign', [AuthController::class, 'sign'])->middleware('throttle:20,1');
 Route::get('login', [AuthController::class, 'login'])->middleware('throttle:20,1');
 

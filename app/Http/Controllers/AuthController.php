@@ -15,7 +15,12 @@ class AuthController extends Controller
 {
     public function session(Request $request)
     {
-        return ['user' => $request->user(), 'csrf_token' => csrf_token(), 'contribution' => config('contribution')];
+        return ['user' => $request->user(), 'contribution' => config('contribution')];
+    }
+
+    public function csrfToken()
+    {
+        return ['csrf_token' => csrf_token()];
     }
 
     public function sign()
