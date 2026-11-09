@@ -18,18 +18,14 @@ class AuthController extends Controller
         return ['user' => $request->user(), 'csrf_token' => csrf_token(), 'contribution' => config('contribution')];
     }
 
-    public function sign(Request $request)
+    public function sign()
     {
-        $request->session()->put('oauth_started_at', time());
-
         return redirect()->away(config('services.emos.url_link'), 302);
     }
 
     public function login(Request $request)
     {
         $data = $request->validate(['token' => ['required', 'string', 'max:4096']]);
-        $started = $request->session()->get('oauth_started_at');
-        abort_unless($started && time() - $started <= 600, 419, '登录入口已过期，请从书架重新发起登录。');
         $url = rtrim((string) config('services.emos.url'), '/');
         abort_if($url === '', 503, 'EMOS 登录地址还没有配置。');
         try {
@@ -53,7 +49,6 @@ class AuthController extends Controller
             return $user;
         });
         Auth::login($user, remember: true);
-        $request->session()->forget('oauth_started_at');
         $request->session()->regenerate();
 
         return redirect('/');
