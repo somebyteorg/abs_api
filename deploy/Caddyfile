@@ -2,23 +2,78 @@
 {
 	{$CADDY_GLOBAL_OPTIONS}
 
+	servers {
+		trusted_proxies static 10.0.0.0/8 127.0.0.1
+	}
+
 	admin {$CADDY_SERVER_ADMIN_HOST}:{$CADDY_SERVER_ADMIN_PORT}
 
 	frankenphp {
 		worker {
-			file "{$APP_PUBLIC_PATH}/frankenphp-worker.php" 
-			{$CADDY_SERVER_WORKER_DIRECTIVE} 
+			file "{$APP_PUBLIC_PATH}/frankenphp-worker.php"
+			{$CADDY_SERVER_WORKER_DIRECTIVE}
 			{$CADDY_SERVER_WATCH_DIRECTIVES}
 		}
 	}
 }
 
-{$CADDY_EXTRA_CONFIG} 
+{$CADDY_EXTRA_CONFIG}
+
+(accel_proxy) {
+	reverse_proxy {args[0]} {
+		@accel header X-Accel-Redirect *
+		handle_response @accel {
+			root * /abs_file
+			rewrite * {rp.header.X-Accel-Redirect}?
+			copy_response_headers {
+				include Content-Type Content-Disposition Set-Cookie Vary X-Content-Type-Options
+			}
+			header {
+				Cache-Control "private, max-age=604800"
+				defer
+			}
+			file_server
+		}
+
+		@error_api {
+			status 404 500 502
+		}
+		handle_response @error_api {
+			respond "error {rp.status_code} :(" {rp.status_code}
+		}
+	}
+}
+
+:9000 {
+	encode zstd br gzip
+	header -via
+	header -date
+
+	log {
+		output file /logs/9000.log
+
+		format console {
+			time_format wall
+			time_local
+		}
+	}
+
+	handle / {
+		respond 418
+	}
+
+	handle /api* {
+		import accel_proxy 127.0.0.1:4050
+	}
+
+	handle /audiobookshelf* {
+		import accel_proxy 127.0.0.1:3333
+	}
+}
 
 {$CADDY_SERVER_SERVER_NAME} {
 	route {
 		root * "{$APP_PUBLIC_PATH}"
-		encode zstd br gzip
 
 		# Mercure configuration is injected here...
 		{$CADDY_SERVER_EXTRA_DIRECTIVES}
