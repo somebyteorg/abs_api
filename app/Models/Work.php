@@ -22,11 +22,14 @@ class Work extends Base
 
     public const PUBLIC_FIELDS = ['id', 'user_id', 'abs_library_id', 'type', 'name', 'tagline', 'description', 'cover_file_id', 'date_air', 'is_adult', 'sync_status', 'sync_error', 'synced_at', 'created_at', 'updated_at', 'revision'];
 
-    public const FIELDS = [...self::PUBLIC_FIELDS, 'abs_id', 'abs_media_id', 'need_sync', 'sync_enqueued_at', 'deleted_at'];
+    public const FIELDS = [...self::PUBLIC_FIELDS, 'metadata', 'abs_id', 'abs_media_id', 'need_sync', 'sync_enqueued_at', 'deleted_at'];
 
     protected function casts(): array
     {
-        return ['date_air' => 'date:Y-m-d', 'is_adult' => 'boolean', 'revision' => 'integer', 'need_sync' => 'boolean', 'synced_at' => 'datetime'];
+        return [
+            'date_air' => 'date:Y-m-d', 'is_adult' => 'boolean', 'revision' => 'integer', 'need_sync' => 'boolean', 'synced_at' => 'datetime',
+            'metadata' => 'array',
+        ];
     }
 
     public function scopeVisibleTo(Builder $query, User $user): void

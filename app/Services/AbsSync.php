@@ -34,6 +34,7 @@ class AbsSync
             $library = Models\Library::query()->select(Models\Library::FIELDS)->lockForUpdate()->findOrFail($work->abs_library_id);
             $work->load(['coverFile:id,file_path', 'authors' => fn ($q) => $q->select(['abs_authors.id', 'name', 'description', 'cover_file_id'])->with('coverFile:id,file_path')]);
             DB::connection('abs')->transaction(function () use ($work, $library, $chapters) {
+                $metadata = $work->metadata;
                 $this->library($library);
                 $authorNames = $work->authors->pluck('name')->implode(', ');
                 $files = [];
@@ -59,12 +60,13 @@ class AbsSync
                         ];
                     }
                 }
-                $common = ['title' => $work->name, 'titleignoreprefix' => $work->name, 'description' => $work->description, 'explicit' => $work->is_adult, 'coverpath' => $work->coverFile?->absPath(), 'tags' => [], 'genres' => []];
+                $common = ['title' => $work->name, 'titleignoreprefix' => $work->name, 'description' => $work->description, 'explicit' => $work->is_adult, 'coverpath' => $work->coverFile?->absPath(), 'tags' => $metadata['tags'] ?? [], 'genres' => $metadata['genres'] ?? []];
                 if ($work->type === 'book') {
                     $this->write(Models\Abs\Book::class, $work->abs_media_id, [...$common,
                         'subtitle' => $work->tagline,
-                        'publishedyear' => $work->date_air?->format('Y'), 'publisheddate' => $work->date_air?->format('Y-m-d'),
-                        'audiofiles' => $files, 'chapters' => $bookChapters, 'duration' => $duration, 'narrators' => [], 'abridged' => false,
+                        'publishedyear' => $work->date_air?->format('Y') ?? $metadata['published_year'] ?? null, 'publisheddate' => $work->date_air?->format('Y-m-d'),
+                        'publisher' => $metadata['publisher'] ?? null, 'language' => $metadata['language'] ?? null, 'isbn' => $metadata['isbn'] ?? null, 'asin' => $metadata['asin'] ?? null,
+                        'audiofiles' => $files, 'chapters' => $bookChapters, 'duration' => $duration, 'narrators' => $metadata['narrators'] ?? [], 'abridged' => $metadata['abridged'] ?? false,
                     ]);
                     $this->authors($work, $library);
                 } else {

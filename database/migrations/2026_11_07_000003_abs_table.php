@@ -41,6 +41,7 @@ return new class extends Migration {
             $table->string('name');
             $table->string('tagline')->nullable();
             $table->text('description')->nullable();
+            $table->jsonb('metadata')->default('{}');
             $table->uuid('cover_file_id')->nullable()->constrained('files');
             $table->date('date_air')->nullable();
             $table->boolean('is_adult')->default(false);
