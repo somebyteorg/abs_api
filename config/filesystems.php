@@ -67,6 +67,14 @@ return [
             'throw'      => true,
             'report'     => false,
         ],
+
+        'qbt' => [
+            'driver' => 'local',
+            'root'   => env('QBT_STORAGE_ROOT', '/abs_file/qbt'),
+            'serve'  => false,
+            'throw'  => true,
+            'report' => false,
+        ],
     ],
 
     /*
