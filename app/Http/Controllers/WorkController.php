@@ -35,11 +35,23 @@ class WorkController extends Controller
 
     public function chapterPage(Request $request, int $work)
     {
-        $data = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'filter' => ['nullable', Rule::in(['all', 'active', 'missing', 'multiple'])], 'page' => ['nullable', 'integer', 'min:1']]);
+        $data = $request->validate([
+            'q' => ['nullable', 'string', 'max:100'], 'filter' => ['nullable', Rule::in(['all', 'active', 'missing', 'multiple'])],
+            'order' => ['nullable', Rule::in(['episode', 'listening'])], 'page' => ['nullable', 'integer', 'min:1'],
+        ]);
         Models\Work::query()->select(['id'])->findOrFail($work);
-        $page = Models\Chapter::query()->select(Models\Chapter::FIELDS)->where('abs_list_id', $work)
-            ->matching($data['q'] ?? null)->resourceState($data['filter'] ?? 'all')
-            ->withResources()->byEpisode()->paginate(Models\Chapter::PAGE_SIZE);
+        $chapters = Models\Chapter::query()->select(Models\Chapter::FIELDS)->where('abs_list_id', $work);
+        if (($data['order'] ?? 'episode') === 'listening') {
+            // Rank the whole work before applying search, resource filters or pagination.
+            $positions = Models\Chapter::query()->select(['id'])->where('abs_list_id', $work)->withOrderPositions();
+            $chapters->select(array_map(fn ($field) => 'abs_items.'.$field, Models\Chapter::FIELDS))
+                ->joinSub($positions, 'chapter_positions', 'abs_items.id', '=', 'chapter_positions.id')
+                ->addSelect('chapter_positions.listening_position')->ordered();
+        } else {
+            $chapters->byEpisode();
+        }
+        $page = $chapters->matching($data['q'] ?? null)->resourceState($data['filter'] ?? 'all')
+            ->withResources()->paginate(Models\Chapter::PAGE_SIZE);
 
         return $this->FormatPage($page, $page->items());
     }
@@ -88,7 +100,7 @@ class WorkController extends Controller
         ]);
         $editor->reorder($request->user(), $work, $data['expected_revision'], $data['chapter_ids']);
 
-        return ['message' => '新顺序已收好。'];
+        return ['message' => '播放顺序已保存，稍后同步。'];
     }
 
     public function retry(Request $request, int $work, Services\WorkEditor $editor)

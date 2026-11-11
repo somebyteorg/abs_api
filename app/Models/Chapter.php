@@ -21,12 +21,18 @@ class Chapter extends Base
 
     public function scopeOrdered(Builder $query): void
     {
-        $query->orderBy('index')->orderBy('id');
+        $query->orderBy($query->qualifyColumn('index'))->orderBy($query->qualifyColumn('id'));
     }
 
     public function scopeByEpisode(Builder $query): void
     {
         $query->orderBy('season_number')->orderBy('episode_number')->orderBy('id');
+    }
+
+    public function scopeWithOrderPositions(Builder $query): void
+    {
+        $query->selectRaw('ROW_NUMBER() OVER (ORDER BY "index", "id") AS listening_position')
+            ->selectRaw('ROW_NUMBER() OVER (ORDER BY "season_number", "episode_number", "id") AS episode_position');
     }
 
     public function scopeWithResources(Builder $query): void
@@ -62,7 +68,7 @@ class Chapter extends Base
 
     protected function casts(): array
     {
-        return ['primary_media_id' => 'integer', 'season_number' => 'integer', 'episode_number' => 'integer'];
+        return ['primary_media_id' => 'integer', 'season_number' => 'integer', 'episode_number' => 'integer', 'listening_position' => 'integer'];
     }
 
     public function resources(): HasMany

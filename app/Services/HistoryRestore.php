@@ -327,7 +327,7 @@ class HistoryRestore
             return '已删除';
         }
         if ($kind === 'chapters') {
-            return 'S'.$row['season_number'].'E'.$row['episode_number'].' '.$row['title'].' · 顺序 '.$row['index'].' · 主资源：'.($primaryNames[$row['primary_media_id']] ?? '无');
+            return 'S'.$row['season_number'].'E'.$row['episode_number'].' '.$row['title'].' · 播放序号 '.$row['index'].' · 主资源：'.($primaryNames[$row['primary_media_id']] ?? '无');
         }
         $chapter = $labels->get($row['abs_item_id']);
 

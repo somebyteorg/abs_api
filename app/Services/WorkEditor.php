@@ -100,6 +100,9 @@ class WorkEditor
             sort($existing);
             sort($incoming);
             abort_unless($existing === $incoming, 409, '章节列表有变化，刷新后再排一次吧。');
+            if ($beforeIds === $ids) {
+                return;
+            }
 
             $snapshot = $this->restore->capture($beforeIds);
             $updates = [];

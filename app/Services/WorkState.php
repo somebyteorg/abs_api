@@ -14,7 +14,16 @@ class WorkState
 
         return [...$work->only(['id', 'revision', 'sync_status', 'sync_error', 'synced_at', 'updated_at']),
             'chapter_count' => $work->chapters_count, 'media_count' => $work->media_count, 'byte_size' => (int) $work->media_sum_file_size,
+            'chapter_order_matches' => $this->chapterOrdersMatch($id),
             'playable_count' => $work->playable_count, 'next_episode' => ((int) $work->last_episode) + 1,
             'publication_state' => $work->sync_status === 'pending' ? 'pending' : ($work->sync_status === 'error' ? 'error' : ($work->playable_count ? 'published' : 'empty'))];
+    }
+
+    private function chapterOrdersMatch(int $id): bool
+    {
+        $positions = Models\Chapter::query()->select(['id'])->where('abs_list_id', $id)->withOrderPositions();
+
+        return ! Models\Chapter::query()->withoutGlobalScopes()->fromSub($positions, 'chapter_positions')
+            ->whereColumn('listening_position', '!=', 'episode_position')->exists();
     }
 }
