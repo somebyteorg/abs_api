@@ -15,7 +15,7 @@ class ChapterController extends Controller
         $data = $request->validate(['q' => ['nullable', 'string', 'max:100'], 'page' => ['nullable', 'integer', 'min:1']]);
         Models\Work::query()->select(['id'])->findOrFail($work);
         $page = Models\Chapter::query()->select(['id', 'title', 'season_number', 'episode_number'])->where('abs_list_id', $work)
-            ->matching($data['q'] ?? null)->ordered()->paginate(Models\Chapter::PAGE_SIZE);
+            ->matching($data['q'] ?? null)->byEpisode()->paginate(Models\Chapter::PAGE_SIZE);
 
         return $this->FormatPage($page, $page->items());
     }

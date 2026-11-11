@@ -39,7 +39,7 @@ class WorkController extends Controller
         Models\Work::query()->select(['id'])->findOrFail($work);
         $page = Models\Chapter::query()->select(Models\Chapter::FIELDS)->where('abs_list_id', $work)
             ->matching($data['q'] ?? null)->resourceState($data['filter'] ?? 'all')
-            ->withResources()->ordered()->paginate(Models\Chapter::PAGE_SIZE);
+            ->withResources()->byEpisode()->paginate(Models\Chapter::PAGE_SIZE);
 
         return $this->FormatPage($page, $page->items());
     }

@@ -24,6 +24,11 @@ class Chapter extends Base
         $query->orderBy('index')->orderBy('id');
     }
 
+    public function scopeByEpisode(Builder $query): void
+    {
+        $query->orderBy('season_number')->orderBy('episode_number')->orderBy('id');
+    }
+
     public function scopeWithResources(Builder $query): void
     {
         $query->with(['resources' => fn ($resources) => $resources->select(Media::FIELDS)->with('uploader:id,username,pseudonym')]);
