@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models;
 use App\Services;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class HistoryController extends Controller
 {
     public function index(Request $request, Services\ActivityHistory $history)
     {
         $data = $request->validate([
+            'category' => ['nullable', Rule::in([Models\ActivityLog::DEFAULT_CATEGORY, 'all', ...array_keys(Models\ActivityLog::CATEGORY_ACTIONS)])],
             'user' => ['nullable', 'string', 'max:100'],
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d'],

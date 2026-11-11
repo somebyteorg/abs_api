@@ -11,6 +11,7 @@ class ActivityHistory
     public function page(Models\User $user, array $data): LengthAwarePaginator
     {
         $page = Models\ActivityLog::query()->select(['id', 'user_id', 'work_id', 'action', 'subject', 'details', 'created_at'])
+            ->category($data['category'] ?? Models\ActivityLog::DEFAULT_CATEGORY)
             ->with('actor:id,username,pseudonym')
             ->when($data['user'] ?? null, fn ($q, $term) => $q->whereHas('actor', fn ($users) => $users->named($term)))
             ->when($data['from'] ?? null, fn ($q, $v) => $q->where('created_at', '>=', $v.' 00:00:00'))
